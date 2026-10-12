@@ -7,21 +7,28 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   generate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Generate stats.svg
-        uses: stats-organization/github-readme-stats-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate stats card
+        uses: readme-tools/github-readme-stats-action@v1
         with:
           card: stats
           options: username=${{ github.repository_owner }}&show_icons=true&theme=dracula&locale=pt-br
-          path: stats.svg
+          path: dist/stats.svg
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit stats card
-        uses: actions/checkout@v6
-      
+      - name: Publish stats card
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: stats-output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
